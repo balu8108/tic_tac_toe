@@ -39,7 +39,8 @@ class _LobbyScreenState extends State<LobbyScreen> {
                       TextButton(
                         child: Text('OK'),
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pop(context);
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (context) => GameScreen(local: false, gameId: newGameId),
@@ -64,7 +65,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
               onPressed: () async {
                 if (gameId != null && gameId!.isNotEmpty) {
                   await _firestoreService.joinGame(gameId!, playerName);
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => GameScreen(local: false, gameId: gameId!),

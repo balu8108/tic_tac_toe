@@ -33,6 +33,16 @@ class FirestoreService {
     return gameId;
   }
 
+  Future<String> resetGame(String gameId) async {
+    await _firestore.collection('games').doc(gameId).update({
+      'board': List.generate(9, (index) => ""),
+      'xTurn': true,
+      'playerO': "",
+      'winner': null,
+    });
+    return gameId;
+  }
+
   Future<void> joinGame(String gameId, String playerO) async {
     await _firestore.collection('games').doc(gameId).update({
       'playerO': playerO,

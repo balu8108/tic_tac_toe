@@ -17,6 +17,7 @@ class _GameScreenState extends State<GameScreen> {
   List<String> board = List.generate(9, (_) => "");
   bool xTurn = true;
   bool gameEnded = false;
+  bool isAlertDialogShowing = false;
 
   @override
   void initState() {
@@ -29,6 +30,11 @@ class _GameScreenState extends State<GameScreen> {
   void _startListeningToGame(String gameId) {
     FirestoreService().getGameStream(gameId).listen((DocumentSnapshot snapshot) {
       if (snapshot.exists) {
+        print(snapshot);
+        print(isAlertDialogShowing);
+        if(isAlertDialogShowing){
+          Navigator.pop(context);
+        }
         setState(() {
           board = List<String>.from(snapshot['board']);
           xTurn = snapshot['xTurn'];
@@ -103,6 +109,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _showWinnerDialog(String winner) {
+    isAlertDialogShowing = true;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -119,10 +126,19 @@ class _GameScreenState extends State<GameScreen> {
                 _resetGame();
               },
             ),
+            TextButton(
+              child: Text('Exit'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
           ],
         );
       },
-    );
+    ).then((value) {
+      isAlertDialogShowing = false;
+      _resetGame();});
   }
 
   void _resetGame() {
@@ -133,7 +149,7 @@ class _GameScreenState extends State<GameScreen> {
     });
 
     if (!widget.local && widget.gameId != null) {
-      FirestoreService().updateGame(widget.gameId!, board, xTurn);
+      FirestoreService().resetGame(widget.gameId!);
     }
   }
 
